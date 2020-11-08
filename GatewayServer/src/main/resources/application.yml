@@ -1,0 +1,41 @@
+server:
+  port: 8080
+ 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://naming-server:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+      - id: authModule
+        uri: lb://REGISTRATION-SERVICE
+        predicates:
+        - Path=/api/auth/**,/api/test/**
+      - id: productModule
+        uri: lb://PRODUCT-SERVICE
+        predicates:
+        - Path=/api/products/**
+      globalcors:
+        corsConfigurations:
+          '[/api/**]':
+            allowedOrigins: "*"
+            allowedHeaders : "*"
+            allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - PATCH
+    
+      
+            

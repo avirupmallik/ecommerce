@@ -1,0 +1,99 @@
+version: '3.7'
+services:
+
+  naming-server:
+    #image: in28min/netflix-eureka-naming-server:0.0.1-SNAPSHOT
+    build:
+      context: EurekaServer
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - reg-network
+
+  gateway-service:
+    #image: in28min/netflix-eureka-naming-server:0.0.1-SNAPSHOT
+    build:
+      context: GatewayServer
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - naming-server
+    networks:
+      - reg-network
+  registration-service:
+    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    build:
+      context: registration-service
+      dockerfile: Dockerfile    
+    ports:
+      - "8084:8083"
+    restart: always
+    depends_on:
+      - naming-server
+      - mysql
+    environment:
+      RDS_HOSTNAME: mysql
+      RDS_PORT: 3306
+      RDS_DB_NAME: world
+      RDS_USERNAME: root1
+      RDS_PASSWORD: Ar!ndam0112358
+    networks:
+      - reg-network
+      
+  product-service:
+    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    build:
+      context: productservice
+      dockerfile: Dockerfile    
+    ports:
+      - "8082:8082"
+    restart: always
+    depends_on:
+      - naming-server
+      - mysql
+    environment:
+      RDS_HOSTNAME: mysql
+      RDS_PORT: 3306
+      RDS_DB_NAME: world
+      RDS_USERNAME: root1
+      RDS_PASSWORD: Ar!ndam0112358
+    networks:
+      - reg-network
+      
+  frontend-service:
+    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    build:
+      context: e-commerce
+      dockerfile: Dockerfile    
+    ports:
+      - "4200:4200"
+    restart: always
+    networks:
+      - reg-network
+
+  mysql:
+    image: mysql:8.0.21
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: Ar!ndam0112358 
+      MYSQL_USER: root1
+      MYSQL_PASSWORD: Ar!ndam0112358
+      MYSQL_DATABASE: world
+    volumes:
+      - mysql-database-data-volume:/var/lib/mysql
+    networks:
+      - reg-network  
+  
+# Networks to be created to facilitate communication between containers
+networks:
+  reg-network:
+
+volumes:
+  mysql-database-data-volume:
