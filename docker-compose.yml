@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   naming-server:
-    #image: in28min/netflix-eureka-naming-server:0.0.1-SNAPSHOT
+    image: be_naming-server:latest
     build:
       context: EurekaServer
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
     restart: always
     networks:
       - reg-network
-
+      
   gateway-service:
     #image: in28min/netflix-eureka-naming-server:0.0.1-SNAPSHOT
     build:
@@ -25,7 +25,7 @@ services:
     networks:
       - reg-network
   registration-service:
-    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    image: reg-service:0.0.5
     build:
       context: registration-service
       dockerfile: Dockerfile    
@@ -44,8 +44,28 @@ services:
     networks:
       - reg-network
       
+  cart-service:
+    image: aviruptatai/cartservice:0.0.1
+    build:
+      context: cartservice
+      dockerfile: Dockerfile    
+    ports:
+      - "8086:8084"
+    restart: always
+    depends_on:
+      - naming-server
+      - mysql
+    environment:
+      RDS_HOSTNAME: mysql
+      RDS_PORT: 3306
+      RDS_DB_NAME: world
+      RDS_USERNAME: root1
+      RDS_PASSWORD: Ar!ndam0112358
+    networks:
+      - reg-network
+      
   product-service:
-    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    image: product-service:0.0.1
     build:
       context: productservice
       dockerfile: Dockerfile    
@@ -65,7 +85,7 @@ services:
       - reg-network
       
   frontend-service:
-    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+    image: aviruptatai/ecommercefe:0.0.1-SNAPSHOT
     build:
       context: e-commerce
       dockerfile: Dockerfile    
@@ -89,7 +109,7 @@ services:
     volumes:
       - mysql-database-data-volume:/var/lib/mysql
     networks:
-      - reg-network  
+      - reg-network
   
 # Networks to be created to facilitate communication between containers
 networks:

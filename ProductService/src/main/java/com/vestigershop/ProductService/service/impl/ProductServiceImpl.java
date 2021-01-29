@@ -34,5 +34,11 @@ public class ProductServiceImpl implements ProductService {
 		return	productRepository.findByProductName(name);
 	}
 
+	@Override
+	public Mono<Product> getProductByProductId(Integer id) {
+		
+		return productRepository.getProductById(id);
+	}
+
 }
 

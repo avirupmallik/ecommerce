@@ -34,6 +34,7 @@ import com.vestigershop.Registration.utils.UserRoles;
 
 @RestController
 @RequestMapping("/api/auth")
+//@CrossOrigin(origins = "*",allowedHeaders = "*")
 public class AuthController {
 	@Autowired
 	AuthenticationManager authenticationManager;
