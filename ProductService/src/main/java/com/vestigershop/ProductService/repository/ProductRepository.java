@@ -15,9 +15,12 @@ public interface ProductRepository extends ReactiveCrudRepository<Product, Integ
 	@Query("Select CategoryId from productcategory where CategoryName = :cName")
 	Mono<Integer> findProductCategory(String cName);
 	
-	@Query("Select ProductName from productdetails where CategoryId = :cId")
+	@Query("Select ProductName,ProductId from productdetails where CategoryId = :cId")
 	Flux<Product> findByProductCategoryId(Integer x);
 	
 	@Query("Select * from productdetails where ProductName = :pName")
 	Mono<Product> findByProductName(String name);
+	
+	@Query("Select * from productdetails where ProductId = :pId")
+	Mono<Product> getProductById(Integer id);
 }

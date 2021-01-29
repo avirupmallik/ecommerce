@@ -1,6 +1,7 @@
 package com.vestigershop.ProductService.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,4 +30,10 @@ public class ProductController {
 	    public Mono<Product> getProductByName(@PathVariable("name") String name) {
 	        return this.product.getProductByProductName(name);
 	    }
+	    
+	    @GetMapping("/pid/{id}")
+	    public Mono<Product> getProductById(@PathVariable(name="id")Integer productId) {
+	        return this.product.getProductByProductId(productId);
+	    }
+	    
 }

@@ -9,4 +9,6 @@ public interface ProductService {
 
 	Flux<Product> getProductByProductCategoryId(String name);
 	Mono<Product> getProductByProductName(String name);
+	
+	Mono<Product> getProductByProductId(Integer id);
 }
