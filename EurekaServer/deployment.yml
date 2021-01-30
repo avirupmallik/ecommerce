@@ -1,0 +1,36 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: naming-service-test
+  labels:
+    name: naming-service-test
+spec:
+  ports:
+    - nodePort: 30164 
+      port: 8761    
+      targetPort: 8761  
+      protocol: TCP
+  selector:           
+    app: naming-service-test
+  type: LoadBalancer       
+
+---
+apiVersion: apps/v1 
+kind: Deployment    
+metadata:              
+  name: naming-service-test
+spec:                
+  selector:         
+    matchLabels:
+      app: naming-service-test
+  replicas: 1      
+  template:
+    metadata:
+      labels:        
+        app: naming-service-test
+    spec:
+      containers:
+        - name: reg-service-test
+          image: aviruptatai/naming-server:0.0.1
+          ports:
+            - containerPort: 8761                

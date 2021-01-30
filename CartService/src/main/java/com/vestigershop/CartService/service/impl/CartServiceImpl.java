@@ -1,6 +1,8 @@
 package com.vestigershop.CartService.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.EurekaClient;
+import com.netflix.discovery.shared.Application;
 import com.vestigershop.CartService.DO.CartDO;
 import com.vestigershop.CartService.conversion.CartObjectConversion;
 import com.vestigershop.CartService.dto.CartDTO;
@@ -21,16 +26,22 @@ public class CartServiceImpl implements CartService {
 
 	private CartRepository cartRepo;
 
-	public CartServiceImpl(CartRepository cartRepository) {
+	private EurekaClient eurekaClient;
+	public CartServiceImpl(CartRepository cartRepository,EurekaClient eurekaClient) {
 		this.cartRepo = cartRepository;
+		this.eurekaClient = eurekaClient;
 	}
 
+	
 	@Override
 	public List<CartDTO> getAllCartByUser(Integer userId) {
 
 		List<CartDTO> newCarts = new ArrayList<>();
+		Application application = eurekaClient.getApplication("PRODUCT-SERVICE");
+		InstanceInfo instanceinfo = application.getInstances().get(0);
+		String url = "http://"+instanceinfo.getIPAddr() + ":" + instanceinfo.getPort() + "/api/products";
 		cartRepo.findAllCartItemByUserId(userId).forEach(x -> {
-			WebClient client = WebClient.create("http://localhost:8082/api/products");
+			WebClient client = WebClient.create(url);
 			ResponseEntity<Product> result = client.get().uri("/pid/{id}", x.getProductId())
 					.accept(MediaType.APPLICATION_JSON).retrieve().toEntity(Product.class).block();
 			CartDTO cartDTO = CartObjectConversion.convertDoToDto(x);
@@ -60,8 +71,11 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public List<CartDTO> getAllExistingCartByUserAndProductId(Integer userId, boolean existFlag,Integer productId) {
 		List<CartDTO> newCarts = new ArrayList<>();
+		Application application = eurekaClient.getApplication("PRODUCT-SERVICE");
+		InstanceInfo instanceinfo = application.getInstances().get(0);
+		String url = "http://"+instanceinfo.getIPAddr() + ":" + instanceinfo.getPort() + "/api/products";
 		cartRepo.findByUserIdAndIsPresentInCartAndProductId(userId,existFlag,productId).forEach(x -> {
-			WebClient client = WebClient.create("http://localhost:8082/api/products");
+			WebClient client = WebClient.create(url);
 			ResponseEntity<Product> result = client.get().uri("/pid/{id}", x.getProductId())
 					.accept(MediaType.APPLICATION_JSON).retrieve().toEntity(Product.class).block();
 			CartDTO cartDTO = CartObjectConversion.convertDoToDto(x);
@@ -75,8 +89,11 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public List<CartDTO> getAllExistingCartByUser(Integer userId, boolean existFlag) {
 		List<CartDTO> newCarts = new ArrayList<>();
+		Application application = eurekaClient.getApplication("PRODUCT-SERVICE");
+		InstanceInfo instanceinfo = application.getInstances().get(0);
+		String url = "http://"+instanceinfo.getIPAddr() + ":" + instanceinfo.getPort() + "/api/products";
 		cartRepo.findByUserIdAndIsPresentInCart(userId,existFlag).forEach(x -> {
-			WebClient client = WebClient.create("http://localhost:8082/api/products");
+			WebClient client = WebClient.create(url);
 			ResponseEntity<Product> result = client.get().uri("/pid/{id}", x.getProductId())
 					.accept(MediaType.APPLICATION_JSON).retrieve().toEntity(Product.class).block();
 			CartDTO cartDTO = CartObjectConversion.convertDoToDto(x);
