@@ -1,0 +1,57 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: reg-service-test
+  labels:
+    name: reg-service-test
+spec:
+  ports:
+    - nodePort: 30163 
+      port: 8083    
+      targetPort: 8083  
+      protocol: TCP
+  selector:           
+    app: reg-service-test
+  type: LoadBalancer       
+
+---
+apiVersion: apps/v1 
+kind: Deployment    
+metadata:              
+  name: reg-service-test
+spec:                
+  selector:         
+    matchLabels:
+      app: reg-service-test
+  replicas: 1      
+  template:
+    metadata:
+      labels:        
+        app: reg-service-test
+    spec:
+      containers:
+        - name: reg-service-test
+          image: aviruptatai/be_registration-service:0.0.3.RELEASE
+          ports:
+            - containerPort: 8083                
+          env:   # Setting Enviornmental Variables
+          - name: DB_HOST
+            valueFrom: 
+              configMapKeyRef:
+                name: db-conf
+                key: host
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: db-conf 
+                key: name
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: password
