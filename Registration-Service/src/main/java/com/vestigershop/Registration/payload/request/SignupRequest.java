@@ -1,5 +1,6 @@
 package com.vestigershop.Registration.payload.request;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
@@ -9,8 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SignupRequest {
+public class SignupRequest implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7764946831151131515L;
+
 	@NotBlank
 	private String username;
 	

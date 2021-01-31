@@ -1,11 +1,18 @@
 package com.vestigershop.CartService.dto;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 @Data
-public class CartDTO {
+public class CartDTO implements Serializable {
 	
     
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 234375502103601879L;
+
 	private Integer cartId;
 	
 	private Integer productId;
